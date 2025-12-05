@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser'); // Add this
 require('dotenv').config();
 
 const userRoutes = require('./routes/user');
@@ -10,10 +11,13 @@ const userRoutes = require('./routes/user');
 const app = express();
 const port = process.env.PORT || 5000;
 
-// Middleware
+// Middleware - Add cookieParser before CORS
+app.use(cookieParser());
 app.use(cors({
   origin: 'http://localhost:3000',
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie']
 }));
 app.use(express.json());
 
@@ -32,8 +36,7 @@ mongoose.connect(uri, {
 
 // JWT Middleware
 const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1];
+  const token = req.cookies.token;
   
   if (!token) {
     return res.status(401).json({ message: 'Access token required' });
