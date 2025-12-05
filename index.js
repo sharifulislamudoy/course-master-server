@@ -3,15 +3,16 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const cookieParser = require('cookie-parser'); // Add this
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const userRoutes = require('./routes/user');
+const courseRoutes = require('./routes/course'); // Add this line
 
 const app = express();
 const port = process.env.PORT || 5000;
 
-// Middleware - Add cookieParser before CORS
+// Middleware
 app.use(cookieParser());
 app.use(cors({
   origin: 'http://localhost:3000',
@@ -34,25 +35,9 @@ mongoose.connect(uri, {
   console.error("MongoDB connection error:", err.message);
 });
 
-// JWT Middleware
-const authenticateToken = (req, res, next) => {
-  const token = req.cookies.token;
-  
-  if (!token) {
-    return res.status(401).json({ message: 'Access token required' });
-  }
-  
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) {
-      return res.status(403).json({ message: 'Invalid or expired token' });
-    }
-    req.user = user;
-    next();
-  });
-};
-
 // Routes
 app.use('/api/users', userRoutes);
+app.use('/api/courses', courseRoutes); // Add this line
 
 // Start server
 app.listen(port, () => {
