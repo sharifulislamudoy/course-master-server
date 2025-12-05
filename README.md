@@ -39,16 +39,15 @@ node index.js
 ### Step 2: Import env file
 Client side (.env.local) 
 ```bash
-PORT=5000
-MONGO_URI=your-mongodb-uri
-JWT_SECRET=your-jwt-secret-key-here
-NODE_ENV=development
+NEXTAUTH_URL=http://localhost:3000
+NEXTAUTH_SECRET=kotTsBARs6W218C8VjTt4sR5lmGwM6Ozo6OCcS9F7/M=
+NEXT_PUBLIC_API_URL=http://localhost:5000
 ```
 
 Server side
 ```bash
-PORT=5000
-MONGO_URI=your-mongodb-uri
-JWT_SECRET=your-jwt-secret-key-here
+MONGO_URI=mongodb+srv://coursemasterDB:1UhT3ypPtb6AAH4G@cluster0.jcakfyu.mongodb.net/?appName=Cluster0
+JWT_SECRET=da4407099493664d6eb6a807730f62449937e6208fcac591fb072f5720aecfe2b6f917f22cd1cecb06dfa46c496e5bc7bffb23fef9353229572d99900c3b7e2e
+FRONTEND_URL=http://localhost:3000
 NODE_ENV=development
 ```
