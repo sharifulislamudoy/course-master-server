@@ -51,11 +51,6 @@ const courseSchema = new mongoose.Schema({
     currentStudents: {
       type: Number,
       default: 0
-    },
-    status: {
-      type: String,
-      enum: ['Upcoming', 'Ongoing', 'Completed', 'Cancelled'],
-      default: 'Upcoming'
     }
   }],
   thumbnail: {
