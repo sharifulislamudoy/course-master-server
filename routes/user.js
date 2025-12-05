@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { registerValidation, loginValidation } = require('../utils/formValidation');
 
-// Define User Schema directly in routes file
+// Define User Schema with role field
 const userSchema = new mongoose.Schema({
   fullName: {
     type: String,
@@ -23,6 +23,11 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minlength: 6
+  },
+  role: {
+    type: String,
+    enum: ['student', 'instructor', 'admin'],
+    default: 'student'
   },
   createdAt: {
     type: Date,
@@ -52,22 +57,24 @@ router.post('/register', async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
-    // Create new user
+    // Create new user with default role
     const user = new User({
       fullName: req.body.fullName,
       email: req.body.email,
-      password: hashedPassword
+      password: hashedPassword,
+      role: 'student' // Default role
     });
 
     // Save user to database
     const savedUser = await user.save();
     
-    // Create JWT token
+    // Create JWT token (include role)
     const token = jwt.sign(
       { 
         _id: savedUser._id,
         email: savedUser.email,
-        fullName: savedUser.fullName
+        fullName: savedUser.fullName,
+        role: savedUser.role
       },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
@@ -86,6 +93,7 @@ router.post('/register', async (req, res) => {
       _id: savedUser._id,
       fullName: savedUser.fullName,
       email: savedUser.email,
+      role: savedUser.role,
       createdAt: savedUser.createdAt
     };
 
@@ -127,12 +135,13 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
 
-    // Create JWT token
+    // Create JWT token (include role)
     const token = jwt.sign(
       { 
         _id: user._id,
         email: user.email,
-        fullName: user.fullName
+        fullName: user.fullName,
+        role: user.role
       },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
@@ -151,6 +160,7 @@ router.post('/login', async (req, res) => {
       _id: user._id,
       fullName: user.fullName,
       email: user.email,
+      role: user.role,
       createdAt: user.createdAt
     };
 
